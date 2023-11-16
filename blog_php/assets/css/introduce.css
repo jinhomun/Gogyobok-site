@@ -203,10 +203,12 @@ fieldset {
     width: 222px;
     height: 284px;
 }
+
 .card__inner>div figure .medal_ranking img {
     width: auto;
     height: auto;
 }
+
 .card__inner>div figure:hover>img {
     filter: saturate(0%);
 }
@@ -436,5 +438,29 @@ fieldset {
 
     .tab_menu {
         margin: 0 auto;
+    }
+
+    .card__list__text p.region {
+        font-size: 13px;
+    }
+
+    .card__list__text p.school__name {
+        font-size: 14px;
+    }
+
+    .card__inner>div figure img {
+        height: 230px;
+    }
+
+    .view-count img,
+    .comment-count img {
+        width: 13px;
+        margin-right: 4px;
+        margin-top: -1px;
+    }
+
+    .view-count,
+    .comment-count {
+        font-size: 11px;
     }
 }

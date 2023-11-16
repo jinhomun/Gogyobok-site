@@ -16,13 +16,37 @@ $(function () {
     }, 3000);
 
 
-    //교복소개 댓글 페이지 슬라이드
-    // $(".cont__bottom__comment").on("click", function () {
-    //     $(".comment_page").animate({ left: 0 }, 600);
-    // })
-    // $(".cont__top a").on("click", function () {
-    //     $(".comment_page").animate({ left: "100%" }, 600);
-    // })
+    function addCommentSlide() {
+        $(".cont__bottom__comment").on("click", function () {
+            $(".comment_page").animate({ left: 0 }, 600);
+        });
+        $(".cont__top span").on("click", function () {
+            $(".comment_page").animate({ left: "100%" }, 600);
+        });
+    }
+
+    function removeCommentSlide() {
+        $(".cont__bottom__comment").off("click");
+        $(".cont__top span").off("click");
+    }
+
+    // 화면 너비에 따라 이벤트 추가 또는 제거
+    function checkScreenWidth() {
+        if (window.innerWidth <= 800) {
+            addCommentSlide();
+        } else {
+            removeCommentSlide();
+        }
+    }
+
+    // 페이지 로드 시 및 리사이즈 이벤트에 대한 처리
+    $(document).ready(function () {
+        checkScreenWidth(); // 페이지 로드 시 초기 체크
+
+        $(window).on("resize", function () {
+            checkScreenWidth(); // 리사이즈 시 화면 너비 다시 확인
+        });
+    });
 
 
 

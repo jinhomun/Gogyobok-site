@@ -43,12 +43,11 @@ if (isset($_SESSION['youName'])) {
 
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go!교복</title>
-
+    
     <link rel="stylesheet" href="../assets/css/cummunity.css">
     <link rel="stylesheet" href="../assets/css/mypage.css">
     <style>
@@ -56,32 +55,45 @@ if (isset($_SESSION['youName'])) {
             padding: 5rem 0;
             min-height: 90vh;
         }
-
         .mypage__inner h2 {
             font-size: 2.3rem;
             text-align: center;
             margin-bottom: 0.5rem;
         }
-
-        .mypage__inner>p {
+        .mypage__inner > p {
             font-size: 1.2rem;
             text-align: center;
             color: #555555;
             word-break: keep-all;
             font-weight: 100;
         }
+        aside.mypage__aside {
+                display: block;
+            }
+        @media only screen and (max-width: 768px) {
+            aside.mypage__aside {
+                display: none;
+            }
+            .mypage__inner h2 {
+                font-size: 2rem;
+            }
+            .mypage__inner > p {
+                width: 90%;
+                margin: 0 auto;
+                font-size: 1rem;
+            }
+        }
     </style>
     <!-- CSS -->
     <?php include "../include/head.php" ?>
 
 </head>
-
 <body>
     <?php include "../include/skip.php" ?>
     <!-- //skip -->
 
     <?php include "../include/header.php" ?>
-
+    
     <main id="main">
         <?php include "../mypage/mypageAside.php" ?>
         <section class="board__inner mypage__inner container">
@@ -89,12 +101,10 @@ if (isset($_SESSION['youName'])) {
             <p>🤗 수다방에서 내가 쓴 게시글을 볼 수 있습니다.</p>
             <div class="board__search">
                 <div class="left">
-                    * 총 <em>
-                        <?= $blogTotalCount ?>
-                    </em>건의 게시물을 등록하셨습니다!
+                    * 총 <em><?=$blogTotalCount?></em>건의 게시물을 등록하셨습니다!
                 </div>
                 <div class="right board__select">
-
+                    
                 </div>
             </div>
             <div class="board__table">
@@ -122,40 +132,27 @@ if (isset($_SESSION['youName'])) {
 
 
 
-                        <?php
-                        $displayBlogId = $blogTotalCount;
+<?php 
+$displayBlogId = $blogTotalCount;
 
-                        foreach ($blogInfo as $blog) {
-                            if ($blog['blogAuthor'] === $youName) { ?>
-                                <tr>
-                                    <td>
-                                        <?= $displayBlogId ?>
-                                    </td>
-                                    <td><a href="../cummunity/communityView.php?blogId=<?= $blog['blogId'] ?>">
-                                            <?= $blog['blogTitle'] ?>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <?= $blog['blogAuthor'] ?>
-                                    </td>
-                                    <td>
-                                        <?= date('Y-m-d', $blog['blogRegTime']) ?>
-                                    </td>
-                                    <td>
-                                        <?= $blog['blogView'] ?>
-                                    </td>
-                                    <td>
-                                        <?= $blog['blogLike'] ?>
-                                    </td>
-                                </tr>
-                                <?php
-                                $displayBlogId--;
-                            }
-                        } ?>
+foreach ($blogInfo as $blog) {
+    if ($blog['blogAuthor'] === $youName) { ?>
+    <tr>
+        <td><?= $displayBlogId ?></td>
+        <td><a href="../cummunity/communityView.php?blogId=<?= $blog['blogId'] ?>"><?= $blog['blogTitle'] ?></a></td>
+        <td><?= $blog['blogAuthor'] ?></td>
+        <td><?= date('Y-m-d', $blog['blogRegTime']) ?></td>
+        <td><?= $blog['blogView'] ?></td>
+        <td><?= $blog['blogLike'] ?></td>
+    </tr>
+<?php 
+$displayBlogId--;
+}
+} ?>
 
 
 
-
+                          
                     </tbody>
                 </table>
             </div>
@@ -172,5 +169,4 @@ if (isset($_SESSION['youName'])) {
     <?php include "../include/footer.php" ?>
     <!-- //footer -->
 </body>
-
 </html>

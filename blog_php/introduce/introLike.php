@@ -9,73 +9,63 @@ if (!isset($_SESSION['memberId'])) {
 
 $memberId = $_SESSION['memberId'];
 $introId = $_POST['introId'] ?? '';
+$likeType = $_POST['likeType'] ?? ''; // 'like' 또는 'dislike'
 
-// 이미 좋아요 또는 싫어요를 눌렀는지 확인
-$likeCheckSql = "SELECT * FROM IntroLikes WHERE memberId = ? AND introId = ? AND introLike = 1";
-$likeCheckStmt = $connect->prepare($likeCheckSql);
-$likeCheckStmt->bind_param("is", $memberId, $introId);
-$likeCheckStmt->execute();
-$likeCheckResult = $likeCheckStmt->get_result();
-
-$dislikeCheckSql = "SELECT * FROM IntroLikes WHERE memberId = ? AND introId = ? AND introLike = 0";
-$dislikeCheckStmt = $connect->prepare($dislikeCheckSql);
-$dislikeCheckStmt->bind_param("is", $memberId, $introId);
-$dislikeCheckStmt->execute();
-$dislikeCheckResult = $dislikeCheckStmt->get_result();
-
-// if ($likeCheckResult->num_rows > 0) {
-//     echo json_encode(['error' => '이미 좋아요를 누르셨습니다.']);
-//     exit;
-// }
-
-// if ($dislikeCheckResult->num_rows > 0) {
-//     echo json_encode(['error' => '이미 싫어요를 누르셨습니다.']);
-//     exit;
-// }
-
-// 좋아요 또는 싫어요 버튼에 따라 SQL 쿼리 선택
-$likeType = $_POST['likeType'] ?? ''; // 'like' 또는 'dislike' 값으로 설정되어야 합니다
-
-if ($likeType == 'like') {
-    $updateLikesSql = "INSERT INTO IntroLikes (memberId, introId, introDislike, introLike, regTime) VALUES (?, ?, 0, 1, UNIX_TIMESTAMP())";
-} elseif ($likeType == 'dislike') {
-    $updateLikesSql = "INSERT INTO IntroLikes (memberId, introId, introDislike, introLike, regTime) VALUES (?, ?, 1, 0, UNIX_TIMESTAMP())";
-} else {
+// 유효한 likeType 값인지 확인
+if ($likeType !== 'like' && $likeType !== 'dislike') {
     echo json_encode(['error' => '올바르지 않은 좋아요 유형입니다.']);
     exit;
 }
 
-// SQL 쿼리 실행
-$updateLikesStmt = $connect->prepare($updateLikesSql);
-$updateLikesStmt->bind_param("is", $memberId, $introId);
-$updateLikesStmt->execute();
+// 사용자가 이미 좋아요 또는 싫어요를 눌렀는지 확인
+$checkSql = "SELECT introLike, introDislike, isChanged FROM IntroLikes WHERE memberId = ? AND introId = ?";
+$checkStmt = $connect->prepare($checkSql);
+$checkStmt->bind_param("is", $memberId, $introId);
+$checkStmt->execute();
+$result = $checkStmt->get_result();
 
-// 좋아요 또는 싫어요 수 조회 쿼리 작성
-$getLikesCountSql = "SELECT COUNT(*) as likeCount FROM IntroLikes WHERE introId = ? AND introLike = 1";
-$getDislikesCountSql = "SELECT COUNT(*) as dislikeCount FROM IntroLikes WHERE introId = ? AND introDislike = 1";
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    // 이미 투표했을 경우, 변경 가능 여부 확인
+    if ($row['isChanged'] == 1) {
+        echo json_encode(['error' => '투표 변경은 한 번만 가능합니다.', 'alreadyChanged' => true]);
+        exit;
+    }
+    // 다른 옵션으로 변경 가능
+    $updateSql = "UPDATE IntroLikes SET introLike = ?, introDislike = ?, isChanged = 1 WHERE memberId = ? AND introId = ?";
+    $like = $likeType === 'like' ? 1 : 0;
+    $dislike = $likeType === 'dislike' ? 1 : 0;
+    $updateStmt = $connect->prepare($updateSql);
+    $updateStmt->bind_param("iiis", $like, $dislike, $memberId, $introId);
+    $updateStmt->execute();
+} else {
+    // 최초 투표인 경우
+    $insertSql = "INSERT INTO IntroLikes (memberId, introId, introLike, introDislike, isChanged, regTime) VALUES (?, ?, ?, ?, 0, UNIX_TIMESTAMP())";
+    $like = $likeType === 'like' ? 1 : 0;
+    $dislike = $likeType === 'dislike' ? 1 : 0;
+    $insertStmt = $connect->prepare($insertSql);
+    $insertStmt->bind_param("isii", $memberId, $introId, $like, $dislike);
+    $insertStmt->execute();
+}
 
-// 좋아요 수 조회
-$likeCountStmt = $connect->prepare($getLikesCountSql);
+// 좋아요 및 싫어요 수 업데이트 후 조회
+$getLikesSql = "SELECT COUNT(*) as likeCount FROM IntroLikes WHERE introId = ? AND introLike = 1";
+$likeCountStmt = $connect->prepare($getLikesSql);
 $likeCountStmt->bind_param("s", $introId);
 $likeCountStmt->execute();
 $likeCountResult = $likeCountStmt->get_result();
-$likeCountRow = $likeCountResult->fetch_assoc();
-$likeCount = $likeCountRow['likeCount'];
+$likeCount = $likeCountResult->fetch_assoc()['likeCount'];
 
-// 싫어요 수 조회
-$dislikeCountStmt = $connect->prepare($getDislikesCountSql);
+$getDislikesSql = "SELECT COUNT(*) as dislikeCount FROM IntroLikes WHERE introId = ? AND introDislike = 1";
+$dislikeCountStmt = $connect->prepare($getDislikesSql);
 $dislikeCountStmt->bind_param("s", $introId);
 $dislikeCountStmt->execute();
 $dislikeCountResult = $dislikeCountStmt->get_result();
-$dislikeCountRow = $dislikeCountResult->fetch_assoc();
-$dislikeCount = $dislikeCountRow['dislikeCount'];
+$dislikeCount = $dislikeCountResult->fetch_assoc()['dislikeCount'];
 
-// 결과 반환 (JSON 형식)
-$response = array(
+// 결과 반환
+echo json_encode([
     'likeCount' => $likeCount,
     'dislikeCount' => $dislikeCount
-);
-
-echo json_encode($response);
-
+]);
 ?>

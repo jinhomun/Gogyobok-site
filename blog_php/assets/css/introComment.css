@@ -220,7 +220,20 @@
 }
 
 
+.intro_detail_page .container.comment_page {
+    box-shadow: none;
+    z-index: 99;
+    position: relative;
+    left: 0;
+}
 
+.intro_detail_page .container.detail_page {
+    position: static;
+}
+
+.container.comment_page .cont__top span {
+    display: none;
+}
 
 
 
@@ -236,6 +249,35 @@
     .cont__comment {
         left: 0;
         width: 100%;
+    }
+}
+
+@media (max-width: 800px) {
+
+    #main .intro_detail_page {
+        position: relative;
+    }
+
+    .intro_detail_page .container.comment_page {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 100%;
+    }
+
+    .intro_detail_page .container.detail_page {
+        position: absolute;
+        width: 100%;
+        top: 0;
+    }
+
+    .container.comment_page .cont__top span {
+        display: flex;
+        margin-right: 0.5rem;
+        align-items: stretch;
+        width: 20px;
+        height: 20px;
+        margin-top: 4px;
     }
 }
 

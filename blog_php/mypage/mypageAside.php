@@ -1,4 +1,57 @@
 <?php
+include "../connect/connect.php";
+include "../connect/session.php";
+
+// echo "<pre>";
+// var_dump($_SESSION);
+// echo "</pre>";
+
+if (isset($_SESSION['youId'])) {
+    $youId = $_SESSION['youId'];
+
+    // 데이터베이스에서 사용자 정보 가져오기
+    $query = "SELECT * FROM blog_myMembers WHERE youId = ?";
+
+    if ($stmt = $connect->prepare($query)) {
+        $stmt->bind_param("s", $youId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 1) {
+            $user_data = $result->fetch_assoc();
+            // $user_data에 사용자 정보가 저장됨
+            $youName = $user_data['youName'];
+            $youEmail = $user_data['youEmail'];
+
+            // 주소를 가져와서 일반 주소와 상세 주소로 나눔
+            $youFullAddress = $user_data['youAddress'];
+            $address_parts = explode(' ', $youFullAddress);
+
+            // 주소의 공백이 5번째 이상인 경우 상세 주소로 처리
+            $youAddress2 = '';
+            $youAddress3 = '';
+            for ($i = 0; $i < count($address_parts); $i++) {
+                if ($i < 5) {
+                    $youAddress2 .= $address_parts[$i] . ' ';
+                } else {
+                    $youAddress3 .= $address_parts[$i] . ' ';
+                }
+            }
+
+            $youPhone = $user_data['youPhone'];
+        }
+
+        $stmt->close();
+    }
+} else {
+    // 사용자가 로그인되지 않은 경우 처리
+    // 사용자를 로그인 페이지로 리디렉션하거나 다른 조치를 취합니다.
+}
+
+
+?>
+<?php
 $current_page = basename($_SERVER['PHP_SELF']); // 현재 페이지 파일명 가져오기
 
 // 각 메뉴 항목에 대한 배열
@@ -47,23 +100,40 @@ $menu_items = array(
 
 ?>
 <aside class="mypage__aside">
+    <div class="m_mypage_h mobile_only" onclick="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
+            <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+            <path
+                d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+        </svg>
+        MYPAGE
+    </div>
+
+    <script>
+    function goBack() {
+        window.history.back(); // 이전 페이지로 이동하는 JavaScript 함수
+    }
+    </script>
+
 
     <div class="mypage__admin">
-        <p class="my__name"><em>정유진</em> 님, 행복한 하루 되세요!</p>
-        <p class="my__email">dbwls9038@naver.com</p>
+        <p class="my__name"><em><?php echo $youName; ?></em> 님, 행복한 하루 되세요!</p>
+        <p class="my__email"><?php echo $youEmail; ?></p>
     </div>
+
     <ul>
-    <?php
+        <?php
         foreach ($menu_items as $url => $item) {
             $class = ($current_page === $url) ? 'active' : '';
             echo '<li class="' . $class . '">';
             echo '<a href="' . $url . '">';
             echo $item['icon']; // 아이콘 추가
             echo $item['label']; // 메뉴 항목 레이블
+            echo '<svg class="mobile_only" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>';
             echo '</a>';
             echo '</li>';
         }
-    ?>
+        ?>
         <!-- <li class="active">
             <a href="mypage.php">
                 <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">

@@ -10,10 +10,17 @@
                 <li><a href="../cummunity/cummunity.php">수다방</a></li>
 
                 <?php if (isset($_SESSION['memberId'])) { ?>
-                    <li class="login_head">
+                    <li class="login_head pc_only">
                         <a href="../mypage/mypage.php" class="my_admin"><em>
                                 <?= $_SESSION['youName'] ?>
                             </em>&nbsp;님 환영합니다!</a>
+                        <a href="../login/logout.php"><img src="../assets/img/logout_btn.png"></a>
+                    </li>
+                    <li class="login_head mobile_only">
+                        <a href="../mypage/m_mypageAside.php" class="my_admin"><em>
+                                <?= $_SESSION['youName'] ?>
+                            </em>&nbsp;님
+                            환영합니다!</a>
                         <a href="../login/logout.php"><img src="../assets/img/logout_btn.png"></a>
                     </li>
                 <?php } else { ?>

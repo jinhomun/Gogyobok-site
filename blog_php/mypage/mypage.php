@@ -1,76 +1,79 @@
 <?php
-    include "../connect/connect.php";
-    include "../connect/session.php";
+include "../connect/connect.php";
+include "../connect/session.php";
 
-    // echo "<pre>";
-    // var_dump($_SESSION);
-    // echo "</pre>";
+// echo "<pre>";
+// var_dump($_SESSION);
+// echo "</pre>";
 
-    if (isset($_SESSION['youId'])) {
-        $youId = $_SESSION['youId'];
-    
-        // 데이터베이스에서 사용자 정보 가져오기
-        $query = "SELECT * FROM blog_myMembers WHERE youId = ?";
+if (isset($_SESSION['youId'])) {
+    $youId = $_SESSION['youId'];
 
-        if ($stmt = $connect->prepare($query)) {
-            $stmt->bind_param("s", $youId);
-            $stmt->execute();
+    // 데이터베이스에서 사용자 정보 가져오기
+    $query = "SELECT * FROM blog_myMembers WHERE youId = ?";
 
-            $result = $stmt->get_result();
+    if ($stmt = $connect->prepare($query)) {
+        $stmt->bind_param("s", $youId);
+        $stmt->execute();
 
-            if ($result->num_rows == 1) {
-                $user_data = $result->fetch_assoc();
-                // $user_data에 사용자 정보가 저장됨
-                $youName = $user_data['youName'];
-                $youEmail = $user_data['youEmail'];
-        
-                // 주소를 가져와서 일반 주소와 상세 주소로 나눔
-                $youFullAddress = $user_data['youAddress'];
-                $address_parts = explode(' ', $youFullAddress);
-        
-                // 주소의 공백이 5번째 이상인 경우 상세 주소로 처리
-                $youAddress2 = '';
-                $youAddress3 = '';
-                for ($i = 0; $i < count($address_parts); $i++) {
-                    if ($i < 5) {
-                        $youAddress2 .= $address_parts[$i] . ' ';
-                    } else {
-                        $youAddress3 .= $address_parts[$i] . ' ';
-                    }
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 1) {
+            $user_data = $result->fetch_assoc();
+            // $user_data에 사용자 정보가 저장됨
+            $youName = $user_data['youName'];
+            $youEmail = $user_data['youEmail'];
+
+            // 주소를 가져와서 일반 주소와 상세 주소로 나눔
+            $youFullAddress = $user_data['youAddress'];
+            $address_parts = explode(' ', $youFullAddress);
+
+            // 주소의 공백이 5번째 이상인 경우 상세 주소로 처리
+            $youAddress2 = '';
+            $youAddress3 = '';
+            for ($i = 0; $i < count($address_parts); $i++) {
+                if ($i < 5) {
+                    $youAddress2 .= $address_parts[$i] . ' ';
+                } else {
+                    $youAddress3 .= $address_parts[$i] . ' ';
                 }
-        
-                $youPhone = $user_data['youPhone'];
             }
 
-            $stmt->close();
+            $youPhone = $user_data['youPhone'];
         }
-    } else {
-        // 사용자가 로그인되지 않은 경우 처리
-        // 사용자를 로그인 페이지로 리디렉션하거나 다른 조치를 취합니다.
-    }
 
-    
+        $stmt->close();
+    }
+} else {
+    // 사용자가 로그인되지 않은 경우 처리
+    // 사용자를 로그인 페이지로 리디렉션하거나 다른 조치를 취합니다.
+}
+
+
 ?>
 
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go!교복</title>
-    
+
     <link rel="stylesheet" href="../assets/css/login.css">
     <link rel="stylesheet" href="../assets/css/mypage.css">
     <style>
         .mypage__inner {
             padding: 5rem 0;
         }
+
         #layer {
             position: fixed;
             overflow: hidden;
             z-index: 1;
             -webkit-overflow-scrolling: touch;
         }
+
         #layer img {
             position: absolute;
             right: -3px;
@@ -80,14 +83,35 @@
             z-index: 1;
             cursor: pointer;
         }
+
         #infoIframe {
             display: none;
+        }
+
+        aside.mypage__aside {
+            display: block;
+        }
+
+        @media only screen and (max-width: 768px) {
+            aside.mypage__aside {
+                display: none;
+            }
+
+            .mypage__inner h2 {
+                font-size: 2rem;
+            }
+
+            .mypage__inner>p {
+                width: 90%;
+                margin: 0 auto;
+            }
         }
     </style>
     <!-- CSS -->
     <?php include "../include/head.php" ?>
 
 </head>
+
 <body>
     <?php include "../include/skip.php" ?>
     <!-- //skip -->
@@ -105,18 +129,20 @@
                 <form action="mypageInfoEnd.php" name="mypageInfoEnd" method="post" onsubmit="return joinChecks();">
                     <div class="check_input">
                         <label for="youId" class="required">아이디</label>
-                        <input type="text" id="youId" name="youId" value="<?php echo $youId; ?>" class="input__style" disabled>
+                        <input type="text" id="youId" name="youId" value="<?php echo $youId; ?>" class="input__style"
+                            disabled>
                         <p class="msg" id="youIdComment">**아이디는 변경할 수 없습니다.</p>
                     </div>
                     <div class="check_input">
                         <label for="youName" class="required">이름</label>
-                        <input type="text" id="youName" name="youName" value="<?php echo $youName; ?>" placeholder="이름을 적어주세요!" class="input__style">
+                        <input type="text" id="youName" name="youName" value="<?php echo $youName; ?>"
+                            placeholder="이름을 적어주세요!" class="input__style">
                         <p class="msg" id="youNameComment"></p>
                     </div>
                     <div class="check_input">
                         <label for="youEmail" class="required">이메일</label>
-                        <input type="email" id="youEmail" name="youEmail" value="<?php echo $youEmail; ?>" placeholder="이메일을 적어주세요!"
-                                class="input__style" disabled>
+                        <input type="email" id="youEmail" name="youEmail" value="<?php echo $youEmail; ?>"
+                            placeholder="이메일을 적어주세요!" class="input__style" disabled>
                         <p class="msg" id="youEmailComment">**이메일은 변경할 수 없습니다.</p>
                     </div>
 
@@ -128,18 +154,22 @@
                             <div id="addressCheck">주소 검색</div>
                         </div>
                         <label for="youAddress2" class="required blind">주소</label>
-                        <input type="text" id="youAddress2" name="youAddress2" value="<?php echo $youAddress2; ?>" placeholder="주소" class="input__style">
+                        <input type="text" id="youAddress2" name="youAddress2" value="<?php echo $youAddress2; ?>"
+                            placeholder="주소" class="input__style">
                         <label for="youAddress3" class="required blind">상세 주소</label>
-                        <input type="text" id="youAddress3" name="youAddress3" value="<?php echo $youAddress3; ?>" placeholder="상세 주소" class="input__style">
+                        <input type="text" id="youAddress3" name="youAddress3" value="<?php echo $youAddress3; ?>"
+                            placeholder="상세 주소" class="input__style">
                         <p class="msg" id="youAddressComment"></p>
                     </div>
                     <div class="check_input">
                         <label for="youPhone">연락처</label>
-                        <input type="text" id="youPhone" name="youPhone" value="<?php echo $youPhone; ?>" placeholder="연락처를 적어주세요!" class="input__style">
+                        <input type="text" id="youPhone" name="youPhone" value="<?php echo $youPhone; ?>"
+                            placeholder="연락처를 적어주세요!" class="input__style">
                         <p class="msg" id="youPhoneComment"></p>
                     </div>
 
-                    <button type="submit" id="mypageSubmit" class="btn__style mt100 join_result_btn" style="color: #fff;">정보 변경하기</button>
+                    <button type="submit" id="mypageSubmit" class="btn__style mt100 join_result_btn"
+                        style="color: #fff;">정보 변경하기</button>
                 </form>
             </div>
         </section>
@@ -154,21 +184,19 @@
 
 
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    
+
     <script>
-
-
-        function joinChecks(){
+        function joinChecks() {
 
             // 이름 유효성 검사
-            if($("#youName").val() == ''){
+            if ($("#youName").val() == '') {
                 $("#youNameComment").text("이름을 입력해주세요.")
                 $("#youName").focus();
                 return false;
             } else {
                 let getYouName = RegExp(/^[가-힣]{3,5}$/);
 
-                if(!getYouName.test($("#youName").val())){
+                if (!getYouName.test($("#youName").val())) {
                     $("#youNameComment").text("이름은 한글(3~5글자)만 사용할 수 있습니다.");
                     $("#youName").val('');
                     $("#youName").focus();
@@ -192,10 +220,8 @@
                     return false;
                 }
             }
-            
-        }
 
-        
+        }
     </script>
 
     <script>
@@ -276,9 +302,12 @@
             layer.style.height = height + 'px';
             layer.style.border = borderWidth + 'px solid';
             // 실행되는 순간의 화면 너비와 높이 값을 가져와서 중앙에 뜰 수 있도록 위치를 계산한다.
-            layer.style.left = (((window.innerWidth || document.documentElement.clientWidth) - width) / 2 - borderWidth) + 'px';
-            layer.style.top = (((window.innerHeight || document.documentElement.clientHeight) - height) / 2 - borderWidth) + 'px';
+            layer.style.left = (((window.innerWidth || document.documentElement.clientWidth) - width) / 2 - borderWidth) +
+                'px';
+            layer.style.top = (((window.innerHeight || document.documentElement.clientHeight) - height) / 2 - borderWidth) +
+                'px';
         }
     </script>
 </body>
+
 </html>

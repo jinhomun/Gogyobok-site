@@ -1,10 +1,10 @@
 <?php
-    include "../connect/connect.php";
-    include "../connect/session.php";
+include "../connect/connect.php";
+include "../connect/session.php";
 
-    // echo "<pre>";
-    // var_dump($_SESSION);
-    // echo "</pre>";
+// echo "<pre>";
+// var_dump($_SESSION);
+// echo "</pre>";
 ?>
 
 <!DOCTYPE html>
@@ -100,7 +100,7 @@
                     <img src="../assets/img/main_hover02.png" alt="">
                     <div class="section02_btn hide">
                         <p>전국 교복 인기순위</p>
-                        <a href="pages/ranking.html">인기순위 보러가기</a>
+                        <a href="../ranking/ranking.php">인기순위 보러가기</a>
                     </div>
                 </div>
             </section>
@@ -110,121 +110,60 @@
                 <div class="section03__inner">
                     <h3>수다방 인기 게시글</h3>
                     <div class="community_suda">
-
-
-
                         <?php
-    if(isset($_GET['page'])){
-        $page = (int) $_GET['page'];
-    } else {
-        $page = 1;
-    }
+                        if (isset($_GET['page'])) {
+                            $page = (int) $_GET['page'];
+                        } else {
+                            $page = 1;
+                        }
 
-    $viewNum = 5; // 각 table에 5개의 게시물 표시
-    $viewLimitStart = ($viewNum * $page) - $viewNum;
+                        $viewNum = 5; // 각 table에 5개의 게시물 표시
+                        $viewLimitStart = ($viewNum * $page) - $viewNum;
 
-    $sql = "SELECT b.boardId, b.boardTitle, m.youName, b.regTime, b.boardView, b.boardLike 
-            FROM Community b 
-            JOIN myMembers m ON(b.memberId = m.memberId) 
-            ORDER BY b.boardView DESC, b.boardId DESC
+                        $sql = "SELECT b.blogId, b.blogTitle, b.blogAuthor, b.blogRegTime, b.blogView, b.blogLike 
+            FROM blogs b 
+            JOIN blog_myMembers m ON(b.memberId = m.memberId) 
+            ORDER BY b.blogView DESC, b.blogId DESC
             LIMIT {$viewLimitStart}, " . (2 * $viewNum); // 각 table당 10개의 게시물 가져옴
+                        
+                        $result = $connect->query($sql);
 
-    $result = $connect->query($sql);
+                        if ($result) {
+                            $count = $result->num_rows;
+                            $sudaListCount = 0;
 
-    if ($result) {
-        $count = $result->num_rows;
-        $sudaListCount = 0;
+                            if ($count > 0) {
+                                while ($info = $result->fetch_array(MYSQLI_ASSOC)) {
+                                    // 각 suda_list에 5개의 tr로 묶이며, section 안에 묶임
+                                    if ($sudaListCount % 5 == 0) {
+                                        if ($sudaListCount > 0) {
+                                            echo '</table></div>';
+                                        }
+                                        echo '<div class="suda_list"><table>';
+                                    }
 
-        if ($count > 0) {
-            while ($info = $result->fetch_array(MYSQLI_ASSOC)) {
-                // 각 suda_list에 5개의 tr로 묶이며, section 안에 묶임
-                if ($sudaListCount % 5 == 0) {
-                    if ($sudaListCount > 0) {
-                        echo '</table></div>';
-                    }
-                    echo '<div class="suda_list"><table>';
-                }
+                                    echo "<tr>";
+                                    echo "<td class='center'>" . $info['blogId'] . "</td>";
+                                    echo "<td><a href='communityView.php?blogId={$info['blogId']}'>" . $info['blogTitle'] . "</a></td>";
+                                    echo "<td class='center'>" . $info['blogAuthor'] . "</td>";
+                                    echo "<td class='center'>" . date('Y.m.d', $info['blogRegTime']) . "</td>";
+                                    echo "<td class='center'><img src='../assets/img/read.svg' alt=''>" . $info['blogView'] . "</td>";
+                                    echo "<td class='center'><img src='../assets/img/good.svg' alt=''>" . $info['blogLike'] . "</td>";
+                                    echo "</tr>";
 
-                echo "<tr>";
-                echo "<td class='center'>" . $info['boardId'] . "</td>";
-                echo "<td><a href='communityView.php?boardId={$info['boardId']}'>" . $info['boardTitle'] . "</a></td>";
-                echo "<td class='center'>" . $info['youName'] . "</td>";
-                echo "<td class='center'>" . date('Y.m.d', $info['regTime']) . "</td>";
-                echo "<td class='center'><img src='../assets/img/read.svg' alt=''>" . $info['boardView'] . "</td>";
-                echo "<td class='center'><img src='../assets/img/good.svg' alt=''>" . $info['boardLike'] . "</td>";
-                echo "</tr>";
+                                    $sudaListCount++;
+                                }
 
-                $sudaListCount++;
-            }
+                                echo '</table></div>';
 
-            echo '</table></div>';
-                
-        } else {
-            echo "<div class='suda_list'><table><tr><td colspan='5'>게시글이 없습니다.</td></tr></table></div>";
-        }
-    } else {
-        echo "관리자에게 문의해주세요!!";
-    }
-?>
-                        <!--
-                        <div class="suda_list">
-                            <table>
-                                <colgroup>
-                                    <col style="width: 5%">
-                                    <col>
-                                    <col style="width: 13%">
-                                    <col style="width: 20%">
-                                    <col style="width: 12%">
-                                    <col style="width: 12%">
-                                </colgroup>
-                                <tr>
-                                    <td class="center">1</td>
-                                    <td><a href="community_view.html">고교복 커뮤니티 수다방입니다.</a></td>
-                                    <td class="center">2023.10.11</td>
-                                    <td class="center"><img src="../assets/img/read.svg" alt="">16</td>
-                                </tr> 
-                            </table>
-                        </div>-->
-                        <!-- <div class="suda_list">
-                            <table>
-                                <colgroup>
-                                    <col style="width: 5%">
-                                    <col>
-                                    <col style="width: 20%">
-                                    <col style="width: 13%">
-                                </colgroup>
-                                <tr>
-                                    <td class="center">1</td>
-                                    <td><a href="community_view.html">고교복 커뮤니티 수다방입니다.</a></td>
-                                    <td class="center">2023.10.11</td>
-                                    <td class="center"><img src="../assets/img/read.svg" alt="">16</td>
-                                </tr>
-                                <tr>
-                                    <td class="center">1</td>
-                                    <td><a href="community_view.html">고교복 커뮤니티 수다방입니다.</a></td>
-                                    <td class="center">2023.10.11</td>
-                                    <td class="center"><img src="../assets/img/read.svg" alt="">16</td>
-                                </tr>
-                                <tr>
-                                    <td class="center">1</td>
-                                    <td><a href="community_view.html">고교복 커뮤니티 수다방입니다.</a></td>
-                                    <td class="center">2023.10.11</td>
-                                    <td class="center"><img src="../assets/img/read.svg" alt="">16</td>
-                                </tr>
-                                <tr>
-                                    <td class="center">1</td>
-                                    <td><a href="community_view.html">고교복 커뮤니티 수다방입니다.</a></td>
-                                    <td class="center">2023.10.11</td>
-                                    <td class="center"><img src="../assets/img/read.svg" alt="">16</td>
-                                </tr>
-                                <tr>
-                                    <td class="center">1</td>
-                                    <td><a href="community_view.html">고교복 커뮤니티 수다방입니다.</a></td>
-                                    <td class="center">2023.10.11</td>
-                                    <td class="center"><img src="../assets/img/read.svg" alt="">16</td>
-                                </tr>
-                            </table>
-                        </div> -->
+                            } else {
+                                echo "<div class='suda_list'><table><tr><td colspan='5'>게시글이 없습니다.</td></tr></table></div>";
+                            }
+                        } else {
+                            echo "관리자에게 문의해주세요!!" . $connect->error;
+                            ;
+                        }
+                        ?>
                     </div>
                 </div>
             </section>
@@ -274,10 +213,10 @@
                         </div>
                     </div>
                     <script>
-                    function playVideo(videoUrl) {
-                        const videoIframe = document.getElementById('videoIframe');
-                        videoIframe.src = videoUrl;
-                    }
+                        function playVideo(videoUrl) {
+                            const videoIframe = document.getElementById('videoIframe');
+                            videoIframe.src = videoUrl;
+                        }
                     </script>
                     <div class="section04_right">
                         <div class="media_mark">
@@ -312,26 +251,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script>
-    const target = gsap.utils.toArray(".split");
-    target.forEach(target => {
-        let splitClient = new SplitType(target, {
-            type: "char"
-        });
-        let chars = splitClient.chars;
+        const target = gsap.utils.toArray(".split");
+        target.forEach(target => {
+            let splitClient = new SplitType(target, {
+                type: "char"
+            });
+            let chars = splitClient.chars;
 
-        gsap.from(chars, {
-            yPercent: 100,
-            opacity: 0,
-            rotation: 30,
-            duration: 0.5,
-            stagger: 0.05,
-            scrollTrigger: {
-                trigger: target,
-                start: "top bottom",
-                end: "+400",
-            }
-        })
-    });
+            gsap.from(chars, {
+                yPercent: 100,
+                opacity: 0,
+                rotation: 30,
+                duration: 0.5,
+                stagger: 0.05,
+                scrollTrigger: {
+                    trigger: target,
+                    start: "top bottom",
+                    end: "+400",
+                }
+            })
+        });
     </script>
 
 </body>

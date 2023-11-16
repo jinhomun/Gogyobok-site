@@ -300,16 +300,16 @@ echo '<script>let introData = ' . json_encode($introData) . ';</script>';
 
 
     function handleSearch(event) {
-        event.preventDefault(); // Prevent the form from submitting the traditional way
+        event.preventDefault(); // 전통적인 방식으로 폼 제출 방지
         const searchKeyword = document.getElementById('searchKeyword').value.trim().toLowerCase();
 
-        // Filter the gobokInfo array based on the search keyword
+        // 검색 키워드를 기반으로 gobokInfo 배열 필터링
         const filteredGobokInfo = gobokInfo.filter(gobok =>
             gobok.infoName.toLowerCase().includes(searchKeyword) ||
             gobok.infoRegion.toLowerCase().includes(searchKeyword)
         );
 
-        // Update the display with the filtered results
+        // 필터링된 결과로 디스플레이 업데이트
         updateGobok(filteredGobokInfo);
     }
 

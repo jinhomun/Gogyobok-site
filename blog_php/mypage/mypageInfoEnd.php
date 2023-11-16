@@ -1,35 +1,36 @@
 <?php
-    include "../connect/connect.php";
-    include "../connect/session.php";
+include "../connect/connect.php";
+include "../connect/session.php";
 
-    $youId = $_SESSION['youId'];
-    // $youId = mysqli_real_escape_string($connect, $_POST['youId']);
-    $youName = mysqli_real_escape_string($connect, $_POST['youName']);
-    $youEmail = mysqli_real_escape_string($connect, $_POST['youEmail']);
-    $youPass = mysqli_real_escape_string($connect, $_POST['youPass']);
-    $youAddress2 = mysqli_real_escape_string($connect, $_POST['youAddress2']);
-    $youAddress3 = mysqli_real_escape_string($connect, $_POST['youAddress3']);
-    $youAddress = $youAddress2 . ' ' . $youAddress3;
-    $youPhone = mysqli_real_escape_string($connect, $_POST['youPhone']);
-    $youRegTime = time();
+$youId = $_SESSION['youId'];
+// $youId = mysqli_real_escape_string($connect, $_POST['youId']);
+$youName = mysqli_real_escape_string($connect, $_POST['youName']);
+$youEmail = mysqli_real_escape_string($connect, $_POST['youEmail']);
+$youPass = mysqli_real_escape_string($connect, $_POST['youPass']);
+$youAddress2 = mysqli_real_escape_string($connect, $_POST['youAddress2']);
+$youAddress3 = mysqli_real_escape_string($connect, $_POST['youAddress3']);
+$youAddress = $youAddress2 . ' ' . $youAddress3;
+$youPhone = mysqli_real_escape_string($connect, $_POST['youPhone']);
+$youRegTime = time();
 
-    $sql = "UPDATE blog_myMembers
+$sql = "UPDATE blog_myMembers
         SET youName = '$youName', youAddress = '$youAddress', youPhone = '$youPhone', youRegTime = '$youRegTime'
         WHERE youId = '$youId'";
-    $connect -> query($sql);
+$connect->query($sql);
 
-    // 데이터 베이스 연결 닫기 
-    mysqli_close($connect);
+// 데이터 베이스 연결 닫기 
+mysqli_close($connect);
 ?>
 
 
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go!교복</title>
-    
+
     <link rel="stylesheet" href="../assets/css/login.css">
     <link rel="stylesheet" href="../assets/css/mypage.css">
 
@@ -39,12 +40,33 @@
         .joinEnd__inner.mypage__inner {
             padding: 13rem 0 !important;
         }
+
         .join__form form {
             display: flex;
             justify-content: center;
         }
+
+        aside.mypage__aside {
+            display: block;
+        }
+
+        @media only screen and (max-width: 768px) {
+            aside.mypage__aside {
+                display: none;
+            }
+
+            .mypage__inner h2 {
+                font-size: 2rem;
+            }
+
+            .mypage__inner>p {
+                width: 90%;
+                margin: 0 auto;
+            }
+        }
     </style>
 </head>
+
 <body>
     <?php include "../include/skip.php" ?>
     <!-- //skip -->
@@ -54,9 +76,9 @@
 
 
     <main id="main" role="main">
-    <?php include "../mypage/mypageAside.php" ?>
+        <?php include "../mypage/mypageAside.php" ?>
         <section class="joinEnd__inner join__inner mypage__inner container">
-            
+
             <img class="ico_join" src="../assets/img/check.png" alt="check">
 
             <h2>회원님의 정보 변경이 완료되었습니다.</h2>
@@ -74,4 +96,5 @@
     <?php include "../include/footer.php" ?>
     <!-- //footer -->
 </body>
+
 </html>

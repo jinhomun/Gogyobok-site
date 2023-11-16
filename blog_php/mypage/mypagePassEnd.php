@@ -18,6 +18,21 @@
             padding: 13rem 0 !important;
             min-height: 90vh;
         }
+        aside.mypage__aside {
+                display: block;
+            }
+        @media only screen and (max-width: 768px) {
+            aside.mypage__aside {
+                display: none;
+            }
+            .mypage__inner h2 {
+                font-size: 2rem;
+            }
+            .mypage__inner > p {
+                width: 90%;
+                margin: 0 auto;
+            }
+        }
     </style>
 </head>
 <body>

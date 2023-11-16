@@ -87,6 +87,43 @@ echo '<script>let introData = ' . json_encode($introData) . ';</script>';
             margin: 0 0.5rem;
             margin-bottom: 2rem;
         }
+        aside.mypage__aside {
+                display: block;
+            }
+        @media only screen and (max-width: 768px) {
+            aside.mypage__aside {
+                display: none;
+            }
+            .mypage__inner h2 {
+                font-size: 2rem;
+            }
+            .mypage__inner > p {
+                width: 90%;
+                margin: 0 auto;
+                font-size: 1rem;
+            }
+            .card__list {
+                margin: 0 0;
+                margin-bottom: 2rem;
+                width: 48%;
+            }
+            
+        }
+        @media only screen and (max-width: 500px) {
+            .card__inner>div figure img {
+                height: 220px;
+            }
+            .card__list__text p.school__name {
+                font-weight: 300;
+                font-size: 16px;
+                color: #000;
+            }
+            .card__list__text p.region {
+                font-size: 14px;
+                color: #7d7d7d;
+                font-weight: 100;
+            }
+        }
     </style>
     <!-- CSS -->
     <?php include "../include/head.php"; ?>
