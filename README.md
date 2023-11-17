@@ -1,3 +1,5 @@
 # Gogyobok-site
 전국에 있는 고등학교 교복을 모아둔 교복소개 사이트 입니다.
-(http://answlsgh95.dothome.co.kr/blog_php/main/main.php)
+
+<p>메인사이트<p>
+![main](https://github.com/jinhomun/Gogyobok-site/assets/144635699/8f70d965-d880-4fa5-ad2b-9652972c7792)
