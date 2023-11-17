@@ -3,5 +3,5 @@
 
 <h4>메인사이트<h4>
 <p align="center">
-  <img src="https://github.com/jinhomun/Gogyobok-site/assets/144635699/8f70d965-d880-4fa5-ad2b-9652972c7792">
+  <img src="https://github.com/jinhomun/Gogyobok-site/assets/144635699/775a10b2-d266-4b92-b297-4f7978b4538c">
 </p>
